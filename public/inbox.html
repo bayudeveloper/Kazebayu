@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Himmel Temp Mail - Inbox">
+    <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/766cj3.jpg">
+    <title>Himmel Inbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bar-title h2 {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        .bar-title p {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .email-display {
+            background: #333;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #333;
+        }
+
+        /* MAIN LAYOUT - SEPERTI GMAIL */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* SIDEBAR KIRI */
+        .sidebar {
+            width: 200px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px 0;
+        }
+
+        .compose-btn {
+            margin: 0 15px 20px;
+            padding: 12px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            width: calc(100% - 30px);
+        }
+
+        .folder-list {
+            list-style: none;
+        }
+
+        .folder-item {
+            padding: 12px 25px;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid transparent;
+        }
+
+        .folder-item.active {
+            background: #f0f0f0;
+            border-left-color: #1a1a1a;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .folder-item:hover {
+            background: #f8f8f8;
+        }
+
+        /* INBOX AREA */
+        .inbox-area {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inbox-toolbar {
+            padding: 15px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            padding: 8px 20px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #eaeaea;
+        }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: 15px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .message-item:hover {
+            background: #fafafa;
+        }
+
+        .message-item.unread {
+            background: #f0f7ff;
+            font-weight: 500;
+        }
+
+        .message-sender {
+            width: 200px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .message-subject {
+            flex: 1;
+            color: #555;
+        }
+
+        .message-time {
+            color: #888;
+            font-size: 0.85rem;
+            width: 100px;
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        /* MODAL BACA PESAN */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-from {
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .modal-body {
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #f0f0f0;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="bar-left">
+            <div class="bar-icon">
+                <img src="https://files.catbox.moe/766cj3.jpg" alt="Himmel">
+            </div>
+            <div class="bar-title">
+                <h2>Himmel Mail</h2>
+                <p>temporary email</p>
+            </div>
+        </div>
+        <div class="bar-right">
+            <div class="email-display" id="currentEmail"></div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+        <!-- SIDEBAR KIRI -->
+        <div class="sidebar">
+            <button class="compose-btn" onclick="compose()">＋ Compose</button>
+            <ul class="folder-list">
+                <li class="folder-item active" onclick="switchFolder('inbox')">
+                    📥 Inbox <span id="inboxCount" style="margin-left:auto; color:#888;"></span>
+                </li>
+                <li class="folder-item" onclick="switchFolder('sent')">📤 Sent</li>
+                <li class="folder-item" onclick="switchFolder('drafts')">📝 Drafts</li>
+                <li class="folder-item" onclick="switchFolder('spam')">⚠️ Spam</li>
+                <li class="folder-item" onclick="switchFolder('trash')">🗑️ Trash</li>
+            </ul>
+        </div>
+
+        <!-- INBOX AREA -->
+        <div class="inbox-area">
+            <div class="inbox-toolbar">
+                <h3>Inbox</h3>
+                <button class="refresh-btn" onclick="refreshInbox()">↻ Refresh</button>
+            </div>
+            
+            <div class="messages-list" id="messagesList">
+                <div class="empty-state">
+                    📭 No messages yet<br>
+                    <small>Send an email to your temporary address</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BACA PESAN -->
+    <div id="messageModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalSubject"></h2>
+                <div class="modal-from" id="modalFrom"></div>
+                <div style="color:#888; font-size:0.85rem;" id="modalDate"></div>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="modal hidden" style="background:rgba(255,255,255,0.8);">
+        <div style="text-align:center;">
+            <div class="loading"></div>
+            <p style="margin-top:20px;">Loading...</p>
+        </div>
+    </div>
+
+    <script>
+        // STATE
+        let currentEmail = localStorage.getItem('himmel_email');
+        let currentPassword = localStorage.getItem('himmel_password');
+        let currentToken = localStorage.getItem('himmel_token');
+        let messages = [];
+
+        // Cek login
+        if (!currentEmail || !currentToken) {
+            window.location.href = '/';
+        }
+
+        document.getElementById('currentEmail').textContent = currentEmail;
+
+        // LOAD INBOX
+        async function loadInbox() {
+            showLoading(true);
+            try {
+                const response = await fetch(`/api/inbox/${currentEmail}?token=${currentToken}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    messages = data.messages || [];
+                    displayMessages(messages);
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // DISPLAY MESSAGES
+        function displayMessages(msgs) {
+            const container = document.getElementById('messagesList');
+            
+            if (!msgs || msgs.length === 0) {
+                container.innerHTML = '<div class="empty-state">📭 No messages yet<br><small>Send an email to your temporary address</small></div>';
+                return;
+            }
+            
+            let html = '';
+            msgs.forEach(msg => {
+                html += `
+                    <div class="message-item" onclick="openMessage('${msg.id}')">
+                        <div class="message-sender">${msg.from || 'Unknown'}</div>
+                        <div class="message-subject">${msg.subject || '(no subject)'}</div>
+                        <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // OPEN MESSAGE
+        async function openMessage(messageId) {
+            showLoading(true);
+            try {
+                const response = await fetch(`/api/message/${currentEmail}/${messageId}?token=${currentToken}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('modalSubject').textContent = data.message.subject || '(no subject)';
+                    document.getElementById('modalFrom').textContent = `From: ${data.message.from || 'Unknown'}`;
+                    document.getElementById('modalDate').textContent = new Date(data.message.created_at).toLocaleString();
+                    document.getElementById('modalBody').textContent = data.message.text || '(empty)';
+                    document.getElementById('messageModal').classList.remove('hidden');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // REFRESH
+        function refreshInbox() {
+            loadInbox();
+        }
+
+        // COMPOSE (pake mailto)
+        function compose() {
+            window.location.href = `mailto:?to=${currentEmail}`;
+        }
+
+        // SWITCH FOLDER
+        function switchFolder(folder) {
+            alert('Coming soon!');
+        }
+
+        // LOGOUT
+        function logout() {
+            localStorage.removeItem('himmel_email');
+            localStorage.removeItem('himmel_password');
+            localStorage.removeItem('himmel_token');
+            window.location.href = '/';
+        }
+
+        // CLOSE MODAL
+        function closeModal() {
+            document.getElementById('messageModal').classList.add('hidden');
+        }
+
+        // SHOW LOADING
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+        }
+
+        // AUTO REFRESH EVERY 30 SECONDS
+        loadInbox();
+        setInterval(loadInbox, 30000);
+
+        // CLICK OUTSIDE MODAL
+        window.onclick = function(event) {
+            const modal = document.getElementById('messageModal');
+            if (event.target === modal) closeModal();
+        }
+    </script>
+</body>
+</html>
