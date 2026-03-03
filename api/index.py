@@ -43,11 +43,16 @@ def api_request(url, method='GET', payload=None, token=None, timeout=15):
 
 def get_domain():
     """Ambil domain pertama dari Mail.tm."""
-    data    = api_request(f"{MAIL_API}/domains")
-    members = data.get('hydra:member', data.get('member', []))
+    data = api_request(f"{MAIL_API}/domains")
+    # Mail.tm kadang return list langsung, kadang object dengan hydra:member
+    if isinstance(data, list):
+        members = data
+    else:
+        members = data.get('hydra:member', data.get('member', []))
     if not members:
         raise Exception("Tidak ada domain tersedia di Mail.tm")
-    return members[0]['domain']
+    item = members[0]
+    return item['domain'] if isinstance(item, dict) else item
 
 
 class handler(BaseHTTPRequestHandler):
@@ -89,7 +94,10 @@ class handler(BaseHTTPRequestHandler):
 
             try:
                 data = api_request(f"{MAIL_API}/messages", token=token)
-                members = data.get('hydra:member', data.get('member', []))
+                if isinstance(data, list):
+                    members = data
+                else:
+                    members = data.get('hydra:member', data.get('member', []))
                 messages = [
                     {
                         "id":         msg.get('id'),
