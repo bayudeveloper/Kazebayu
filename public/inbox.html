@@ -441,8 +441,9 @@
 </div>
 
 <script>
-    const email = localStorage.getItem('himmel_email');
-    const token = localStorage.getItem('himmel_token');
+    const email    = localStorage.getItem('himmel_email');
+    const token    = localStorage.getItem('himmel_token');
+    const provider = localStorage.getItem('himmel_provider') || 'mailtm';
 
     if (!email || !token) { window.location.href = '/'; }
 
