@@ -10,7 +10,8 @@ from urllib.parse import urlparse, parse_qs
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-MAIL_API = "https://api.mail.tm"
+MAIL_API     = "https://api.mail.tm"
+PREFER_DOMAIN = "himmel.com"  # ganti ke domain favorit kamu
 
 
 def send_json(h, status, data):
@@ -33,26 +34,28 @@ def api_request(url, method='GET', payload=None, token=None, timeout=15):
     }
     if token:
         headers['Authorization'] = f'Bearer {token}'
-
     data = json.dumps(payload).encode() if payload else None
     req  = urllib.request.Request(url, data=data, headers=headers, method=method)
-
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode('utf-8'))
 
 
 def get_domain():
-    """Ambil domain pertama dari Mail.tm."""
+    """Ambil domain dari Mail.tm, prioritaskan PREFER_DOMAIN jika tersedia."""
     data = api_request(f"{MAIL_API}/domains")
-    # Mail.tm kadang return list langsung, kadang object dengan hydra:member
-    if isinstance(data, list):
-        members = data
-    else:
-        members = data.get('hydra:member', data.get('member', []))
+    members = data if isinstance(data, list) else data.get('hydra:member', data.get('member', []))
     if not members:
         raise Exception("Tidak ada domain tersedia di Mail.tm")
-    item = members[0]
-    return item['domain'] if isinstance(item, dict) else item
+
+    domains = [
+        (item['domain'] if isinstance(item, dict) else item)
+        for item in members
+    ]
+
+    # Pakai domain favorit kalau ada, kalau tidak pakai yang pertama
+    if PREFER_DOMAIN in domains:
+        return PREFER_DOMAIN
+    return domains[0]
 
 
 class handler(BaseHTTPRequestHandler):
@@ -93,11 +96,8 @@ class handler(BaseHTTPRequestHandler):
                 return
 
             try:
-                data = api_request(f"{MAIL_API}/messages", token=token)
-                if isinstance(data, list):
-                    members = data
-                else:
-                    members = data.get('hydra:member', data.get('member', []))
+                data    = api_request(f"{MAIL_API}/messages", token=token)
+                members = data if isinstance(data, list) else data.get('hydra:member', data.get('member', []))
                 messages = [
                     {
                         "id":         msg.get('id'),
@@ -171,7 +171,6 @@ class handler(BaseHTTPRequestHandler):
             except Exception:
                 custom = ''
 
-            # Bersihkan prefix
             if custom:
                 prefix = ''.join(c for c in custom if c.isalnum() or c in '-_.')[:30]
             if not custom or not prefix:
@@ -180,17 +179,14 @@ class handler(BaseHTTPRequestHandler):
             password = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
             try:
-                # 1. Ambil domain
                 domain = get_domain()
                 email  = f"{prefix}@{domain}"
 
-                # 2. Buat akun
                 api_request(f"{MAIL_API}/accounts", method='POST', payload={
                     "address":  email,
                     "password": password
                 })
 
-                # 3. Ambil token
                 tok = api_request(f"{MAIL_API}/token", method='POST', payload={
                     "address":  email,
                     "password": password
