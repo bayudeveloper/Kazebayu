@@ -6,10 +6,9 @@
     <meta name="description" content="Himmel Temp Mail - Temporary email service with @himmel.com domain">
     <meta name="author" content="Bayu Official">
     
-    <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/766cj3.jpg">
     
-    <title>Himmel Temp Mail - Generate Email</title>
+    <title>Himmel Temp Mail</title>
     
     <style>
         * {
@@ -261,13 +260,13 @@
         const randomBtn = document.getElementById('randomBtn');
         const loading = document.getElementById('globalLoading');
 
-        generateBtn.addEventListener('click', () => generateEmail(false));
+        generateBtn.addEventListener('click', () => generateEmail());
         randomBtn.addEventListener('click', () => {
             document.getElementById('emailPrefix').value = '';
-            generateEmail(true);
+            generateEmail();
         });
 
-        async function generateEmail(isRandom) {
+        async function generateEmail() {
             const prefix = document.getElementById('emailPrefix').value;
             
             loading.classList.remove('hidden');
@@ -284,18 +283,16 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Simpan data ke localStorage
                     localStorage.setItem('himmel_email', data.email);
                     localStorage.setItem('himmel_password', data.password);
                     localStorage.setItem('himmel_token', data.token);
                     
-                    // Redirect ke halaman inbox
                     window.location.href = '/inbox.html';
                 } else {
                     alert('Error: ' + data.message);
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                alert('Network Error: ' + error.message);
             } finally {
                 loading.classList.add('hidden');
                 generateBtn.disabled = false;
