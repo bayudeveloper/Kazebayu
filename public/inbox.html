@@ -8,15 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0e0e0f;
-            --surface: #161618;
-            --border: #252527;
-            --accent: #e8e0d0;
-            --muted: #555558;
-            --text: #d4cfc8;
-            --text-dim: #7a7870;
+            --bg:        #0e0e0f;
+            --surface:   #161618;
+            --surface2:  #1c1c1e;
+            --border:    #252527;
+            --border2:   #303033;
+            --accent:    #e8e0d0;
+            --muted:     #555558;
+            --text:      #d4cfc8;
+            --text-dim:  #7a7870;
             --highlight: #2a2a2c;
-            --pulse: #c8b89a;
+            --pulse:     #c8b89a;
+            --green:     #4caf76;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,7 +34,7 @@
             overflow: hidden;
         }
 
-        /* ── TOP BAR ── */
+        /* ── HEADER ── */
         header {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
@@ -43,34 +46,12 @@
             flex-shrink: 0;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-logo { width: 32px; height: 32px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
         .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .brand-name { font-size: 0.95rem; font-weight: 600; color: var(--accent); letter-spacing: 0.01em; }
 
-        .brand-name {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--accent);
-            letter-spacing: 0.01em;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
 
         .email-pill {
             font-family: 'DM Mono', monospace;
@@ -84,18 +65,7 @@
             transition: all 0.15s;
             user-select: all;
         }
-
         .email-pill:hover { border-color: var(--muted); }
-
-        .copy-hint {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-        }
-
-        .email-pill:hover + .copy-hint { opacity: 1; }
 
         .btn-ghost {
             background: transparent;
@@ -108,15 +78,11 @@
             font-family: 'DM Sans', sans-serif;
             transition: all 0.15s;
         }
+        .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
 
-        .btn-ghost:hover {
-            border-color: var(--muted);
-            color: var(--text);
-        }
-
-        /* ── INBOX TOOLBAR ── */
+        /* ── TOOLBAR ── */
         .toolbar {
-            padding: 14px 28px;
+            padding: 12px 28px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -125,23 +91,19 @@
             background: var(--surface);
         }
 
-        .toolbar-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .toolbar-left { display: flex; align-items: center; gap: 12px; }
 
         .toolbar-title {
-            font-size: 0.82rem;
-            font-weight: 500;
+            font-size: 0.78rem;
+            font-weight: 600;
             color: var(--accent);
-            letter-spacing: 0.04em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
         }
 
         .msg-count {
             font-family: 'DM Mono', monospace;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--text-dim);
             background: var(--highlight);
             border: 1px solid var(--border);
@@ -149,32 +111,21 @@
             border-radius: 999px;
         }
 
-        .auto-refresh-info {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .auto-refresh-info { font-size: 0.73rem; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
 
         .pulse-dot {
-            width: 6px;
-            height: 6px;
-            background: #4caf76;
+            width: 6px; height: 6px;
+            background: var(--green);
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+            animation: pulse-anim 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
+        @keyframes pulse-anim {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.8); }
+            50%       { opacity: 0.4; transform: scale(0.8); }
         }
 
-        .countdown {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--muted);
-        }
+        .countdown { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); }
 
         .btn-refresh {
             background: transparent;
@@ -183,40 +134,25 @@
             padding: 5px 14px;
             border-radius: 999px;
             cursor: pointer;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-family: 'DM Sans', sans-serif;
             transition: all 0.15s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            display: flex; align-items: center; gap: 6px;
         }
-
         .btn-refresh:hover { border-color: var(--muted); color: var(--text); }
-        .btn-refresh:active { transform: scale(0.97); }
-
-        .btn-refresh .icon {
-            display: inline-block;
-            transition: transform 0.4s ease;
-        }
-
+        .btn-refresh .icon { display: inline-block; }
         .btn-refresh.spinning .icon { animation: spin 0.6s linear; }
-
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ── MESSAGE LIST ── */
-        .messages-wrap {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px 0;
-        }
-
+        .messages-wrap { flex: 1; overflow-y: auto; padding: 6px 0; }
         .messages-wrap::-webkit-scrollbar { width: 4px; }
         .messages-wrap::-webkit-scrollbar-track { background: transparent; }
         .messages-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .msg-row {
             display: grid;
-            grid-template-columns: 220px 1fr auto;
+            grid-template-columns: 200px 1fr auto;
             align-items: center;
             gap: 16px;
             padding: 13px 28px;
@@ -225,158 +161,220 @@
             transition: background 0.1s;
             animation: fadeIn 0.2s ease;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-
         .msg-row:hover { background: var(--highlight); }
-
         .msg-row.unread .msg-sender { color: var(--accent); font-weight: 600; }
         .msg-row.unread .msg-subject { color: var(--text); }
 
-        .msg-sender {
-            font-size: 0.84rem;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .msg-sender { font-size: 0.84rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .msg-subject { font-size: 0.84rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .msg-time { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); white-space: nowrap; }
 
-        .msg-subject {
-            font-size: 0.84rem;
-            color: var(--text-dim);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .msg-time {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-
-        /* ── EMPTY / LOADING ── */
+        /* ── STATES ── */
         .state-center {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            color: var(--text-dim);
+            padding: 60px 20px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 12px; color: var(--text-dim);
         }
-
-        .state-icon { font-size: 2rem; opacity: 0.4; }
-        .state-text { font-size: 0.85rem; }
+        .state-icon { font-size: 2rem; opacity: 0.35; }
+        .state-text { font-size: 0.82rem; }
 
         .spinner {
-            width: 22px;
-            height: 22px;
+            width: 22px; height: 22px;
             border: 2px solid var(--border);
             border-top-color: var(--pulse);
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
 
-        /* ── MODAL ── */
+        /* ══════════════════════════════════
+           MODAL
+        ══════════════════════════════════ */
         .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
             z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
         }
-
-        .overlay.open {
-            opacity: 1;
-            pointer-events: all;
-        }
+        .overlay.open { opacity: 1; pointer-events: all; }
 
         .modal {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 680px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            transform: translateY(12px);
-            transition: transform 0.2s;
+            border: 1px solid var(--border2);
+            border-radius: 20px;
+            width: 92%;
+            max-width: 700px;
+            max-height: 86vh;
+            display: flex; flex-direction: column;
+            transform: translateY(16px) scale(0.98);
+            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
         }
+        .overlay.open .modal { transform: translateY(0) scale(1); }
 
-        .overlay.open .modal { transform: translateY(0); }
-
+        /* Modal header */
         .modal-header {
-            padding: 22px 24px 16px;
+            padding: 20px 22px 18px;
             border-bottom: 1px solid var(--border);
             position: relative;
+            background: var(--surface2);
+            flex-shrink: 0;
+        }
+
+        .modal-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .modal-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a2a2c, #1a1a1c);
+            border: 1px solid var(--border2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            color: var(--pulse);
+            font-weight: 700;
+            font-family: 'DM Mono', monospace;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .modal-meta-right { flex: 1; min-width: 0; }
+
+        .modal-from-name {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-from-addr {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.69rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-date-badge {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.67rem;
+            color: var(--text-dim);
+            background: var(--highlight);
+            border: 1px solid var(--border);
+            padding: 3px 9px;
+            border-radius: 999px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .modal-subject {
             font-size: 1rem;
             font-weight: 600;
             color: var(--accent);
-            padding-right: 32px;
             line-height: 1.4;
-        }
-
-        .modal-from {
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            margin-top: 6px;
-            font-family: 'DM Mono', monospace;
+            padding-right: 36px;
         }
 
         .modal-close {
             position: absolute;
-            top: 18px;
-            right: 20px;
+            top: 16px; right: 18px;
             background: var(--highlight);
             border: 1px solid var(--border);
             color: var(--text-dim);
-            width: 28px;
-            height: 28px;
+            width: 28px; height: 28px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             transition: all 0.15s;
         }
+        .modal-close:hover { color: var(--accent); border-color: var(--muted); background: var(--border2); }
 
-        .modal-close:hover { color: var(--text); border-color: var(--muted); }
-
+        /* Modal body */
         .modal-body {
-            padding: 20px 24px;
             overflow-y: auto;
             flex: 1;
-            font-size: 0.88rem;
-            line-height: 1.8;
-            color: var(--text);
         }
-
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-track { background: transparent; }
         .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        .modal-body iframe {
+        /* Plain text */
+        .email-plain {
+            padding: 24px 28px;
+            font-size: 0.875rem;
+            line-height: 1.9;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        /* HTML email card */
+        .email-html-wrap { padding: 18px 22px; }
+
+        .email-html-card {
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .email-html-bar {
+            padding: 9px 14px;
+            background: var(--highlight);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot-red   { width: 9px; height: 9px; border-radius: 50%; background: #ff5f57; }
+        .dot-yellow{ width: 9px; height: 9px; border-radius: 50%; background: #febc2e; }
+        .dot-green { width: 9px; height: 9px; border-radius: 50%; background: #28c840; }
+
+        .email-html-label {
+            margin-left: auto;
+            font-size: 0.66rem;
+            font-family: 'DM Mono', monospace;
+            color: var(--muted);
+        }
+
+        .email-iframe {
             width: 100%;
             border: none;
-            min-height: 300px;
-            background: white;
-            border-radius: 8px;
+            min-height: 280px;
+            display: block;
+            background: #f8f8f8;
+        }
+
+        /* Modal loading */
+        .modal-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 60px 20px;
+            color: var(--text-dim);
+            font-size: 0.82rem;
         }
 
         .hidden { display: none !important; }
@@ -384,7 +382,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
     <div class="brand">
         <div class="brand-logo">
@@ -394,19 +391,17 @@
     </div>
     <div class="header-right">
         <span class="email-pill" id="emailPill" onclick="copyEmail(this)" title="Click to copy"></span>
-        <span class="copy-hint">click to copy</span>
         <button class="btn-ghost" onclick="logout()">Logout</button>
     </div>
 </header>
 
-<!-- TOOLBAR -->
 <div class="toolbar">
     <div class="toolbar-left">
         <span class="toolbar-title">Inbox</span>
         <span class="msg-count" id="msgCount">0</span>
         <div class="auto-refresh-info">
             <div class="pulse-dot"></div>
-            <span>auto refresh in</span>
+            <span>refresh in</span>
             <span class="countdown" id="countdown">30s</span>
         </div>
     </div>
@@ -415,8 +410,7 @@
     </button>
 </div>
 
-<!-- MESSAGES -->
-<div class="messages-wrap" id="messagesWrap">
+<div class="messages-wrap">
     <div class="state-center" id="loadingState">
         <div class="spinner"></div>
         <span class="state-text">Loading inbox…</span>
@@ -428,15 +422,27 @@
     <div id="msgList"></div>
 </div>
 
-<!-- MESSAGE MODAL -->
+<!-- MODAL -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
-    <div class="modal" id="modal">
+    <div class="modal">
         <div class="modal-header">
-            <div class="modal-subject" id="modalSubject"></div>
-            <div class="modal-from" id="modalFrom"></div>
+            <div class="modal-meta">
+                <div class="modal-avatar" id="modalAvatar">?</div>
+                <div class="modal-meta-right">
+                    <div class="modal-from-name" id="modalFromName">—</div>
+                    <div class="modal-from-addr" id="modalFromAddr">—</div>
+                </div>
+                <div class="modal-date-badge" id="modalDate">—</div>
+            </div>
+            <div class="modal-subject" id="modalSubject">—</div>
             <button class="modal-close" onclick="closeModal()">×</button>
         </div>
-        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-body" id="modalBody">
+            <div class="modal-loading">
+                <div class="spinner"></div>
+                <span>Loading message…</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -449,9 +455,8 @@
 
     document.getElementById('emailPill').textContent = email;
 
-    // ── COUNTDOWN TIMER ──
+    // ── COUNTDOWN ──
     let countdownVal = 30;
-    let refreshTimer;
     let countdownInterval;
 
     function resetCountdown() {
@@ -461,14 +466,11 @@
         countdownInterval = setInterval(() => {
             countdownVal--;
             document.getElementById('countdown').textContent = countdownVal + 's';
-            if (countdownVal <= 0) {
-                clearInterval(countdownInterval);
-                loadInbox();
-            }
+            if (countdownVal <= 0) { clearInterval(countdownInterval); loadInbox(); }
         }, 1000);
     }
 
-    // ── LOAD INBOX ──
+    // ── INBOX ──
     async function loadInbox(manual = false) {
         const btn = document.getElementById('refreshBtn');
         if (manual) {
@@ -477,26 +479,27 @@
         }
 
         try {
-            const res  = await fetch(`/api/inbox/${encodeURIComponent(email)}?token=${encodeURIComponent(token)}`);
+            const res  = await fetch(`/api/inbox/${encodeURIComponent(email)}?token=${encodeURIComponent(token)}&provider=${provider}`);
             const data = await res.json();
 
-            const loadingEl = document.getElementById('loadingState');
-            const emptyEl   = document.getElementById('emptyState');
-            const listEl    = document.getElementById('msgList');
-
-            loadingEl.classList.add('hidden');
-
+            document.getElementById('loadingState').classList.add('hidden');
             if (!data.success) throw new Error(data.message);
 
             const msgs = data.messages || [];
             document.getElementById('msgCount').textContent = msgs.length;
 
             if (!msgs.length) {
-                emptyEl.classList.remove('hidden');
-                listEl.innerHTML = '';
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('msgList').innerHTML = '';
             } else {
-                emptyEl.classList.add('hidden');
-                renderMessages(msgs);
+                document.getElementById('emptyState').classList.add('hidden');
+                document.getElementById('msgList').innerHTML = msgs.map(msg => `
+                    <div class="msg-row unread" onclick="openMessage('${escAttr(String(msg.id))}')">
+                        <div class="msg-sender">${escHtml(msg.from || 'Unknown')}</div>
+                        <div class="msg-subject">${escHtml(msg.subject || '(no subject)')}</div>
+                        <div class="msg-time">${formatTime(msg.created_at)}</div>
+                    </div>
+                `).join('');
             }
         } catch (err) {
             console.error('Inbox error:', err);
@@ -505,54 +508,64 @@
         resetCountdown();
     }
 
-    function renderMessages(msgs) {
-        const listEl = document.getElementById('msgList');
-        listEl.innerHTML = msgs.map(msg => `
-            <div class="msg-row unread" onclick="openMessage('${msg.id}')">
-                <div class="msg-sender">${escHtml(msg.from || 'Unknown')}</div>
-                <div class="msg-subject">${escHtml(msg.subject || '(no subject)')}</div>
-                <div class="msg-time">${formatTime(msg.created_at)}</div>
-            </div>
-        `).join('');
-    }
-
     // ── OPEN MESSAGE ──
     async function openMessage(id) {
-        document.getElementById('modalSubject').textContent = 'Loading…';
-        document.getElementById('modalFrom').textContent    = '';
-        document.getElementById('modalBody').innerHTML      = '<div style="display:flex;justify-content:center;padding:40px"><div class="spinner"></div></div>';
+        document.getElementById('modalAvatar').textContent   = '…';
+        document.getElementById('modalFromName').textContent = '—';
+        document.getElementById('modalFromAddr').textContent = '—';
+        document.getElementById('modalDate').textContent     = '—';
+        document.getElementById('modalSubject').textContent  = 'Loading…';
+        document.getElementById('modalBody').innerHTML = `
+            <div class="modal-loading"><div class="spinner"></div><span>Loading message…</span></div>`;
         document.getElementById('overlay').classList.add('open');
 
         try {
             const res  = await fetch(`/api/message/${encodeURIComponent(email)}/${id}?token=${encodeURIComponent(token)}&provider=${provider}`);
             const data = await res.json();
-
             if (!data.success) throw new Error(data.message);
 
             const m = data.message;
-            document.getElementById('modalSubject').textContent = m.subject || '(no subject)';
-            document.getElementById('modalFrom').textContent    = m.from   || 'Unknown';
+            const sender = m.from || 'Unknown';
+            const avatarChar = sender.replace(/[^a-zA-Z]/g,'')[0]?.toUpperCase() || '?';
 
-            // Render HTML email safely via srcdoc iframe, else plain text
-            // Mail.tm returns html/text as array or string
+            document.getElementById('modalAvatar').textContent   = avatarChar;
+            document.getElementById('modalFromName').textContent = sender.split('@')[0] || sender;
+            document.getElementById('modalFromAddr').textContent = sender;
+            document.getElementById('modalDate').textContent     = formatTimeFull(m.created_at);
+            document.getElementById('modalSubject').textContent  = m.subject || '(no subject)';
+
             const htmlContent = Array.isArray(m.html) ? m.html.join('') : (m.html || '');
             const textContent = Array.isArray(m.text) ? m.text.join('\n') : (m.text || '');
 
             if (htmlContent.trim()) {
-                document.getElementById('modalBody').innerHTML =
-                    `<iframe srcdoc="${escAttr(htmlContent)}" sandbox="allow-same-origin"></iframe>`;
-                const iframe = document.getElementById('modalBody').querySelector('iframe');
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="email-html-wrap">
+                        <div class="email-html-card">
+                            <div class="email-html-bar">
+                                <div class="dot-red"></div>
+                                <div class="dot-yellow"></div>
+                                <div class="dot-green"></div>
+                                <span class="email-html-label">HTML EMAIL</span>
+                            </div>
+                            <iframe class="email-iframe" id="emailFrame"
+                                srcdoc="${escAttr(htmlContent)}"
+                                sandbox="allow-same-origin"></iframe>
+                        </div>
+                    </div>`;
+                const iframe = document.getElementById('emailFrame');
                 iframe.onload = () => {
                     try {
-                        iframe.style.height = iframe.contentDocument.body.scrollHeight + 'px';
+                        const h = iframe.contentDocument.body.scrollHeight;
+                        iframe.style.height = Math.min(h + 32, 560) + 'px';
                     } catch(e) {}
                 };
             } else {
                 document.getElementById('modalBody').innerHTML =
-                    `<pre style="white-space:pre-wrap;font-family:'DM Sans',sans-serif">${escHtml(textContent || '(empty)')}</pre>`;
+                    `<div class="email-plain">${escHtml(textContent || '(empty message)')}</div>`;
             }
-        } catch (err) {
-            document.getElementById('modalBody').textContent = 'Error: ' + err.message;
+        } catch(err) {
+            document.getElementById('modalBody').innerHTML =
+                `<div class="email-plain" style="color:var(--text-dim)">Error: ${escHtml(err.message)}</div>`;
         }
     }
 
@@ -561,7 +574,6 @@
         document.getElementById('overlay').classList.remove('open');
     }
 
-    // ── COPY EMAIL ──
     function copyEmail(el) {
         navigator.clipboard.writeText(email).then(() => {
             const orig = el.textContent;
@@ -570,31 +582,28 @@
         });
     }
 
-    function logout() {
-        localStorage.clear();
-        window.location.href = '/';
-    }
+    function logout() { localStorage.clear(); window.location.href = '/'; }
 
-    // ── UTILS ──
     function escHtml(s) {
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-
     function escAttr(s) {
-        return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
-
     function formatTime(iso) {
         if (!iso) return '—';
-        const d   = new Date(iso);
+        const d = new Date(typeof iso === 'number' ? iso * 1000 : iso);
         const now = new Date();
-        if (d.toDateString() === now.toDateString()) {
+        if (d.toDateString() === now.toDateString())
             return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
         return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
+    function formatTimeFull(iso) {
+        if (!iso) return '—';
+        const d = new Date(typeof iso === 'number' ? iso * 1000 : iso);
+        return d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
 
-    // Keyboard close
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') document.getElementById('overlay').classList.remove('open');
     });
