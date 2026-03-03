@@ -533,10 +533,13 @@
             document.getElementById('modalFrom').textContent    = m.from   || 'Unknown';
 
             // Render HTML email safely via srcdoc iframe, else plain text
-            if (m.html && m.html.trim()) {
+            // Mail.tm returns html/text as array or string
+            const htmlContent = Array.isArray(m.html) ? m.html.join('') : (m.html || '');
+            const textContent = Array.isArray(m.text) ? m.text.join('\n') : (m.text || '');
+
+            if (htmlContent.trim()) {
                 document.getElementById('modalBody').innerHTML =
-                    `<iframe srcdoc="${escAttr(m.html)}" sandbox="allow-same-origin"></iframe>`;
-                // Auto-resize iframe
+                    `<iframe srcdoc="${escAttr(htmlContent)}" sandbox="allow-same-origin"></iframe>`;
                 const iframe = document.getElementById('modalBody').querySelector('iframe');
                 iframe.onload = () => {
                     try {
@@ -545,7 +548,7 @@
                 };
             } else {
                 document.getElementById('modalBody').innerHTML =
-                    `<pre style="white-space:pre-wrap;font-family:'DM Sans',sans-serif">${escHtml(m.text || '(empty)')}</pre>`;
+                    `<pre style="white-space:pre-wrap;font-family:'DM Sans',sans-serif">${escHtml(textContent || '(empty)')}</pre>`;
             }
         } catch (err) {
             document.getElementById('modalBody').textContent = 'Error: ' + err.message;
