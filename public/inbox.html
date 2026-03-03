@@ -523,7 +523,7 @@
         document.getElementById('overlay').classList.add('open');
 
         try {
-            const res  = await fetch(`/api/message/${encodeURIComponent(email)}/${id}?token=${encodeURIComponent(token)}`);
+            const res  = await fetch(`/api/message/${encodeURIComponent(email)}/${id}?token=${encodeURIComponent(token)}&provider=${provider}`);
             const data = await res.json();
 
             if (!data.success) throw new Error(data.message);
