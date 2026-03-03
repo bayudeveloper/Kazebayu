@@ -362,7 +362,7 @@
             border: none;
             min-height: 280px;
             display: block;
-            background: #f8f8f8;
+            background: transparent;
         }
 
         /* Modal loading */
@@ -548,7 +548,7 @@
                                 <span class="email-html-label">HTML EMAIL</span>
                             </div>
                             <iframe class="email-iframe" id="emailFrame"
-                                srcdoc="${escAttr(htmlContent)}"
+                                srcdoc="${escAttr(injectBg(htmlContent))}"
                                 sandbox="allow-same-origin"></iframe>
                         </div>
                     </div>`;
@@ -583,6 +583,25 @@
     }
 
     function logout() { localStorage.clear(); window.location.href = '/'; }
+
+    function injectBg(html) {
+        const bgStyle = `
+            <style>
+                html, body {
+                    background: url('https://files.catbox.moe/2lm8iy.jpg') center center / cover fixed !important;
+                    min-height: 100% !important;
+                }
+                body { padding: 16px !important; }
+                /* Make text readable over image */
+                p, div, td, span, a, li, h1, h2, h3, h4, h5, h6 {
+                    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+                }
+            </style>`;
+        if (html.includes('</head>')) {
+            return html.replace('</head>', bgStyle + '</head>');
+        }
+        return bgStyle + html;
+    }
 
     function escHtml(s) {
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
