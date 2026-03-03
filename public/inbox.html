@@ -5,4 +5,597 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/766cj3.jpg">
     <title>Himmel Inbox</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0e0e0f;
+            --surface: #161618;
+            --border: #252527;
+            --accent: #e8e0d0;
+            --muted: #555558;
+            --text: #d4cfc8;
+            --text-dim: #7a7870;
+            --highlight: #2a2a2c;
+            --pulse: #c8b89a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ── TOP BAR ── */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 28px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .brand-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.01em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .email-pill {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+            background: var(--highlight);
+            border: 1px solid var(--border);
+            color: var(--pulse);
+            padding: 6px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: all;
+        }
+
+        .email-pill:hover { border-color: var(--muted); }
+
+        .copy-hint {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .email-pill:hover + .copy-hint { opacity: 1; }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.15s;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--muted);
+            color: var(--text);
+        }
+
+        /* ── INBOX TOOLBAR ── */
+        .toolbar {
+            padding: 14px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            background: var(--surface);
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .toolbar-title {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .msg-count {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            background: var(--highlight);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .auto-refresh-info {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background: #4caf76;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .countdown {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .btn-refresh {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 5px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-refresh:hover { border-color: var(--muted); color: var(--text); }
+        .btn-refresh:active { transform: scale(0.97); }
+
+        .btn-refresh .icon {
+            display: inline-block;
+            transition: transform 0.4s ease;
+        }
+
+        .btn-refresh.spinning .icon { animation: spin 0.6s linear; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── MESSAGE LIST ── */
+        .messages-wrap {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .messages-wrap::-webkit-scrollbar { width: 4px; }
+        .messages-wrap::-webkit-scrollbar-track { background: transparent; }
+        .messages-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .msg-row {
+            display: grid;
+            grid-template-columns: 220px 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 13px 28px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.1s;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-row:hover { background: var(--highlight); }
+
+        .msg-row.unread .msg-sender { color: var(--accent); font-weight: 600; }
+        .msg-row.unread .msg-subject { color: var(--text); }
+
+        .msg-sender {
+            font-size: 0.84rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .msg-subject {
+            font-size: 0.84rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .msg-time {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        /* ── EMPTY / LOADING ── */
+        .state-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-dim);
+        }
+
+        .state-icon { font-size: 2rem; opacity: 0.4; }
+        .state-text { font-size: 0.85rem; }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-top-color: var(--pulse);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        /* ── MODAL ── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 680px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(12px);
+            transition: transform 0.2s;
+        }
+
+        .overlay.open .modal { transform: translateY(0); }
+
+        .modal-header {
+            padding: 22px 24px 16px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .modal-subject {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent);
+            padding-right: 32px;
+            line-height: 1.4;
+        }
+
+        .modal-from {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 6px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            background: var(--highlight);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .modal-close:hover { color: var(--text); border-color: var(--muted); }
+
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 0.88rem;
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        .modal-body::-webkit-scrollbar { width: 4px; }
+        .modal-body::-webkit-scrollbar-track { background: transparent; }
+        .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .modal-body iframe {
+            width: 100%;
+            border: none;
+            min-height: 300px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="brand">
+        <div class="brand-logo">
+            <img src="https://files.catbox.moe/766cj3.jpg" alt="Himmel">
+        </div>
+        <span class="brand-name">Himmel Mail</span>
+    </div>
+    <div class="header-right">
+        <span class="email-pill" id="emailPill" onclick="copyEmail(this)" title="Click to copy"></span>
+        <span class="copy-hint">click to copy</span>
+        <button class="btn-ghost" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+    <div class="toolbar-left">
+        <span class="toolbar-title">Inbox</span>
+        <span class="msg-count" id="msgCount">0</span>
+        <div class="auto-refresh-info">
+            <div class="pulse-dot"></div>
+            <span>auto refresh in</span>
+            <span class="countdown" id="countdown">30s</span>
+        </div>
+    </div>
+    <button class="btn-refresh" id="refreshBtn" onclick="loadInbox(true)">
+        <span class="icon">↻</span> Refresh
+    </button>
+</div>
+
+<!-- MESSAGES -->
+<div class="messages-wrap" id="messagesWrap">
+    <div class="state-center" id="loadingState">
+        <div class="spinner"></div>
+        <span class="state-text">Loading inbox…</span>
+    </div>
+    <div class="state-center hidden" id="emptyState">
+        <div class="state-icon">📭</div>
+        <span class="state-text">No messages yet — waiting for mail</span>
+    </div>
+    <div id="msgList"></div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <div class="modal-subject" id="modalSubject"></div>
+            <div class="modal-from" id="modalFrom"></div>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    const email = localStorage.getItem('himmel_email');
+    const token = localStorage.getItem('himmel_token');
+
+    if (!email || !token) { window.location.href = '/'; }
+
+    document.getElementById('emailPill').textContent = email;
+
+    // ── COUNTDOWN TIMER ──
+    let countdownVal = 30;
+    let refreshTimer;
+    let countdownInterval;
+
+    function resetCountdown() {
+        clearInterval(countdownInterval);
+        countdownVal = 30;
+        document.getElementById('countdown').textContent = '30s';
+        countdownInterval = setInterval(() => {
+            countdownVal--;
+            document.getElementById('countdown').textContent = countdownVal + 's';
+            if (countdownVal <= 0) {
+                clearInterval(countdownInterval);
+                loadInbox();
+            }
+        }, 1000);
+    }
+
+    // ── LOAD INBOX ──
+    async function loadInbox(manual = false) {
+        const btn = document.getElementById('refreshBtn');
+        if (manual) {
+            btn.classList.add('spinning');
+            setTimeout(() => btn.classList.remove('spinning'), 600);
+        }
+
+        try {
+            const res  = await fetch(`/api/inbox/${encodeURIComponent(email)}?token=${encodeURIComponent(token)}`);
+            const data = await res.json();
+
+            const loadingEl = document.getElementById('loadingState');
+            const emptyEl   = document.getElementById('emptyState');
+            const listEl    = document.getElementById('msgList');
+
+            loadingEl.classList.add('hidden');
+
+            if (!data.success) throw new Error(data.message);
+
+            const msgs = data.messages || [];
+            document.getElementById('msgCount').textContent = msgs.length;
+
+            if (!msgs.length) {
+                emptyEl.classList.remove('hidden');
+                listEl.innerHTML = '';
+            } else {
+                emptyEl.classList.add('hidden');
+                renderMessages(msgs);
+            }
+        } catch (err) {
+            console.error('Inbox error:', err);
+        }
+
+        resetCountdown();
+    }
+
+    function renderMessages(msgs) {
+        const listEl = document.getElementById('msgList');
+        listEl.innerHTML = msgs.map(msg => `
+            <div class="msg-row unread" onclick="openMessage('${msg.id}')">
+                <div class="msg-sender">${escHtml(msg.from || 'Unknown')}</div>
+                <div class="msg-subject">${escHtml(msg.subject || '(no subject)')}</div>
+                <div class="msg-time">${formatTime(msg.created_at)}</div>
+            </div>
+        `).join('');
+    }
+
+    // ── OPEN MESSAGE ──
+    async function openMessage(id) {
+        document.getElementById('modalSubject').textContent = 'Loading…';
+        document.getElementById('modalFrom').textContent    = '';
+        document.getElementById('modalBody').innerHTML      = '<div style="display:flex;justify-content:center;padding:40px"><div class="spinner"></div></div>';
+        document.getElementById('overlay').classList.add('open');
+
+        try {
+            const res  = await fetch(`/api/message/${encodeURIComponent(email)}/${id}?token=${encodeURIComponent(token)}`);
+            const data = await res.json();
+
+            if (!data.success) throw new Error(data.message);
+
+            const m = data.message;
+            document.getElementById('modalSubject').textContent = m.subject || '(no subject)';
+            document.getElementById('modalFrom').textContent    = m.from   || 'Unknown';
+
+            // Render HTML email safely via srcdoc iframe, else plain text
+            if (m.html && m.html.trim()) {
+                document.getElementById('modalBody').innerHTML =
+                    `<iframe srcdoc="${escAttr(m.html)}" sandbox="allow-same-origin"></iframe>`;
+                // Auto-resize iframe
+                const iframe = document.getElementById('modalBody').querySelector('iframe');
+                iframe.onload = () => {
+                    try {
+                        iframe.style.height = iframe.contentDocument.body.scrollHeight + 'px';
+                    } catch(e) {}
+                };
+            } else {
+                document.getElementById('modalBody').innerHTML =
+                    `<pre style="white-space:pre-wrap;font-family:'DM Sans',sans-serif">${escHtml(m.text || '(empty)')}</pre>`;
+            }
+        } catch (err) {
+            document.getElementById('modalBody').textContent = 'Error: ' + err.message;
+        }
+    }
+
+    function closeModal(e) {
+        if (e && e.target !== document.getElementById('overlay')) return;
+        document.getElementById('overlay').classList.remove('open');
+    }
+
+    // ── COPY EMAIL ──
+    function copyEmail(el) {
+        navigator.clipboard.writeText(email).then(() => {
+            const orig = el.textContent;
+            el.textContent = 'Copied!';
+            setTimeout(() => el.textContent = orig, 1500);
+        });
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/';
+    }
+
+    // ── UTILS ──
+    function escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function escAttr(s) {
+        return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function formatTime(iso) {
+        if (!iso) return '—';
+        const d   = new Date(iso);
+        const now = new Date();
+        if (d.toDateString() === now.toDateString()) {
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+
+    // Keyboard close
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') document.getElementById('overlay').classList.remove('open');
+    });
+
+    loadInbox();
+</script>
+</body>
+</html>
